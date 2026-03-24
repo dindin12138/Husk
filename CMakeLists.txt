@@ -19,10 +19,14 @@ FetchContent_MakeAvailable(ghostty)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl egl xkbcommon)
 
-# --- Define Husk Executable ---
-add_executable(${PROJECT_NAME} src/main.cpp)
+file(GLOB_RECURSE HUSK_SOURCES "src/*.cpp")
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${WAYLAND_INCLUDE_DIRS} src)
+# --- Define Husk Executable ---
+add_executable(${PROJECT_NAME} ${HUSK_SOURCES})
+
+target_include_directories(
+  ${PROJECT_NAME} PRIVATE ${WAYLAND_INCLUDE_DIRS}
+                          "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ghostty-vt ${WAYLAND_LIBRARIES})
 
@@ -32,9 +36,11 @@ file(
   "find _deps/ghostty-src/zig-out/include/ghostty -type f -name '*.h' -exec sed -E -i 's/typedef struct ([A-Za-z0-9_]*) *\\* *\\1;/typedef struct \\1_s* \\1;/g' {} +\n"
 )
 
-add_custom_command(
-  TARGET ${PROJECT_NAME}
-  PRE_BUILD
+add_custom_target(
+  patch_ghostty_headers
   COMMAND bash patch_ghostty.sh
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-  COMMENT "Executing patch_ghostty.sh...")
+  COMMENT "Patching libghostty C headers for C++ namespace compatibility...")
+
+add_dependencies(patch_ghostty_headers ghostty-vt)
+add_dependencies(${PROJECT_NAME} patch_ghostty_headers)
