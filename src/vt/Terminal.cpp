@@ -1,6 +1,6 @@
-#include "terminal/Terminal.hpp"
+#include "Terminal.hpp"
 
-namespace husk {
+namespace husk::vt {
 
 Terminal::Terminal(uint16_t cols, uint16_t rows, size_t max_scrollback) {
   GhosttyTerminalOptions opts = {
@@ -43,4 +43,4 @@ void Terminal::resize(uint16_t cols, uint16_t rows) {
 
 void Terminal::reset() { ghostty_terminal_reset(m_handle); }
 
-} // namespace husk
+} // namespace husk::vt

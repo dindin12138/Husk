@@ -8,7 +8,7 @@ extern "C" {
 #include <ghostty/vt/terminal.h>
 }
 
-namespace husk {
+namespace husk::vt {
 
 class Terminal {
 public:
@@ -31,4 +31,4 @@ private:
   GhosttyTerminal m_handle{nullptr};
 };
 
-} // namespace husk
+} // namespace husk::vt
