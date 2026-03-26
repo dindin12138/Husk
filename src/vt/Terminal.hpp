@@ -22,7 +22,8 @@ public:
   Terminal &operator=(Terminal &&other) noexcept;
 
   void write(std::string_view data);
-  void resize(uint16_t cols, uint16_t rows);
+  void resize(uint16_t cols, uint16_t rows, uint32_t width_px = 0,
+              uint32_t height_px = 0);
   void reset();
 
   GhosttyTerminal get_handle() const { return m_handle; }

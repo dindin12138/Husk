@@ -19,6 +19,8 @@
     libGL
     egl-wayland
     libffi
+    sdl3
+    wgpu-native
   ];
 
   enterShell = ''

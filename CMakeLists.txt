@@ -12,23 +12,40 @@ message(STATUS "Fetching libghostty...")
 FetchContent_Declare(
   ghostty
   GIT_REPOSITORY https://github.com/ghostty-org/ghostty.git
-  GIT_TAG ecc55b94c803789762682065ab68f227447909c5)
+  GIT_TAG b839561e5db36589d6a999044c76bfe785a013d7)
 FetchContent_MakeAvailable(ghostty)
 
-# --- Find Wayland & EGL Dependencies ---
+# --- Find Dependencies ---
+# Wayland & EGL
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl egl xkbcommon)
 
-file(GLOB_RECURSE HUSK_SOURCES "src/*.cpp")
+# SDL3
+find_package(SDL3 REQUIRED)
+
+# WGPU-Native
+find_path(WGPU_INCLUDE_DIR NAMES webgpu/webgpu.h)
+find_library(WGPU_NATIVE_LIB NAMES wgpu_native wgpu)
+
+if(NOT WGPU_INCLUDE_DIR OR NOT WGPU_NATIVE_LIB)
+  message(FATAL_ERROR "wgpu-native not found! Are you in the devenv shell?")
+endif()
+
+message(STATUS "Found WGPU Include: ${WGPU_INCLUDE_DIR}")
+message(STATUS "Found WGPU Library: ${WGPU_NATIVE_LIB}")
 
 # --- Define Husk Executable ---
+file(GLOB_RECURSE HUSK_SOURCES "src/*.cpp")
 add_executable(${PROJECT_NAME} ${HUSK_SOURCES})
 
+# --- Include Directories ---
 target_include_directories(
-  ${PROJECT_NAME} PRIVATE ${WAYLAND_INCLUDE_DIRS}
+  ${PROJECT_NAME} PRIVATE ${WAYLAND_INCLUDE_DIRS} ${WGPU_INCLUDE_DIR}
                           "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ghostty-vt ${WAYLAND_LIBRARIES})
+# --- Link Libraries ---
+target_link_libraries(${PROJECT_NAME} PRIVATE ghostty-vt ${WAYLAND_LIBRARIES}
+                                              SDL3::SDL3 ${WGPU_NATIVE_LIB})
 
 # --- Hack: Patch libghostty headers for C++ compatibility ---
 file(

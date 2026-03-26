@@ -37,8 +37,11 @@ void Terminal::write(std::string_view data) {
       m_handle, reinterpret_cast<const uint8_t *>(data.data()), data.size());
 }
 
-void Terminal::resize(uint16_t cols, uint16_t rows) {
-  ghostty_terminal_resize(m_handle, cols, rows);
+void Terminal::resize(uint16_t cols, uint16_t rows, uint32_t width_px,
+                      uint32_t height_px) {
+  if (m_handle) {
+    ghostty_terminal_resize(m_handle, cols, rows, width_px, height_px);
+  }
 }
 
 void Terminal::reset() { ghostty_terminal_reset(m_handle); }
