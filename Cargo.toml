@@ -1,0 +1,6 @@
+[workspace]
+resolver = "2"
+members = ["husk-core", "husk-daemon", "husk-client"]
+
+[workspace.dependencies]
+husk-core = { path = "husk-core" }
