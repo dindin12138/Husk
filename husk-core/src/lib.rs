@@ -3,6 +3,8 @@
 #![allow(non_snake_case)]
 #![allow(dead_code)]
 
+pub mod ipc;
+
 use std::ptr;
 use tracing::instrument;
 
