@@ -5,3 +5,6 @@ edition = "2024"
 
 [dependencies]
 husk-core = { workspace = true }
+
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
