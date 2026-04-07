@@ -14,7 +14,9 @@
     libxkbcommon
 
     vulkan-loader
+    libclang
   ];
+  env.LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
 
   enterShell = ''
     echo "===================================================="
