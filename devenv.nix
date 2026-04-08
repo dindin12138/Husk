@@ -18,6 +18,17 @@
   ];
   env.LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
 
+  # The crucial fix for NixOS + winit/wgpu:
+  # Instructs dlopen where to find shared libraries at runtime
+  env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (
+    with pkgs;
+    [
+      wayland
+      libxkbcommon
+      vulkan-loader
+    ]
+  );
+
   enterShell = ''
     echo "===================================================="
     echo "🦀 Welcome to the $PROJECT_NAME (Rust) Dev Environment!"
