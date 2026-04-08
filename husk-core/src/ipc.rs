@@ -20,6 +20,12 @@ pub enum ClientMessage {
         px_height: u32,
         epoch: u64,
     },
+    /// ACK for stop-and-wait SHM expansion protocol
+    SHMRemapped,
+    /// ACK for distributed LRU image eviction
+    EvictionAck {
+        image_id: u32,
+    },
     Detach,
 }
 
@@ -27,6 +33,8 @@ pub enum ClientMessage {
 #[derive(Serialize, Deserialize, Debug)]
 pub enum DaemonMessage {
     HandshakeAck,
+    /// Granular configuration synchronization for UI states
+    ConfigSynced, // TODO: Will hold a serialized struct containing colors, opacity, etc.
     /// Notification of screen changes.
     /// Actual pixel data is passed via Data Plane (Shared Memory)
     RenderDiff {
@@ -34,7 +42,18 @@ pub enum DaemonMessage {
         shm_offset: u32,
         shm_len: u32,
     },
-    FontAtlasUpdated,
+    /// Micro-batched notification of newly baked glyphs ready in SHM
+    GlyphsReady {
+        glyph_ids: Vec<u32>,
+    },
+    /// Signal to trigger client-side mmap re-mapping
+    SHMResized {
+        new_size: u64,
+    },
+    /// Signal to trigger client-side GPU texture destruction
+    ImageEvicted {
+        image_id: u32,
+    },
 }
 
 /// Computes a secure, user-isolated path for the Unix Domain Socket
