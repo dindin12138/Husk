@@ -57,6 +57,11 @@ pub enum DaemonMessage {
     ImageEvicted {
         image_id: u32,
     },
+    // TEMPORARY TRACER BULLET: Bypassing SHM to send fake pixels via UDS directly
+    DummyFrame {
+        epoch: u64,
+        pixels: Vec<u8>,
+    },
 }
 
 // ==========================================
